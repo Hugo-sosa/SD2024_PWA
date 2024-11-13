@@ -1,4 +1,4 @@
-const CACHE_NAME="v1_cache_PWA";
+const CACHE_NAME = "v1_cache_PWA";
 
 var urlsToCache = [
     './',
@@ -16,52 +16,50 @@ var urlsToCache = [
     './imagenes/gallina(8).jpg',
     './imagenes/gallina(9).jpg',
     './imagenes/gallina(10).jpg',
-]
+];
 
-self.addEventListener('install' ,e => {
+self.addEventListener('install', e => {
     e.waitUntil(
         caches.open(CACHE_NAME)
-                .then(cache => {
-                    return cache.addAll(urlsToCache)
+            .then(cache => {
+                return cache.addAll(urlsToCache)
                     .then(() => {
                         self.skipWaiting();
                     })
                     .catch(err => {
-                        console.log('No se a cargado la cache', err);
-                    })
-                })
+                        console.log('No se ha cargado la cache', err);
+                    });
+            })
     );
 });
 
-self.addEventListener('activate' ,e => {
+self.addEventListener('activate', e => {
     const cacheWhiteList = [CACHE_NAME];
     e.waitUntil(
         caches.keys()
-              .then(cacheNames => {
+            .then(cacheNames => {
                 return Promise.all(
                     cacheNames.map(cacheName => {
-                        if (cacheWhiteList.indexOf(cacheName)) {
+                        if (!cacheWhiteList.includes(cacheName)) {
                             return caches.delete(cacheName);
                         }
                     })
-                )
-              })
-              .then(() => {
+                );
+            })
+            .then(() => {
                 self.clients.claim();
-              })
-    )
+            })
+    );
 });
 
-self.addEventListener('fetch' ,e => {
+self.addEventListener('fetch', e => {
     e.respondWith(
-        caches.match(e.request
-              .then(res => {
-                if (res){
+        caches.match(e.request)
+            .then(res => {
+                if (res) {
                     return res;
                 }
-                return fetch(e.request)
-              })
-        )
-    )
+                return fetch(e.request);
+            })
+    );
 });
-
